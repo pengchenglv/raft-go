@@ -434,6 +434,7 @@ type raft struct {
 	traceLogger TraceLogger
 }
 
+// 初始化raft log等
 func newRaft(c *Config) *raft {
 	if err := c.validate(); err != nil {
 		panic(err.Error())

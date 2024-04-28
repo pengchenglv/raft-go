@@ -135,6 +135,7 @@ type Node interface {
 	Tick()
 	// Campaign causes the Node to transition to candidate state and start campaigning to become leader.
 	Campaign(ctx context.Context) error
+	// 是因为使用的是内存版本的raft log吗？
 	// Propose proposes that data be appended to the log. Note that proposals can be lost without
 	// notice, therefore it is user's job to ensure proposal retries.
 	Propose(ctx context.Context, data []byte) error
@@ -251,6 +252,7 @@ func setupNode(c *Config, peers []Peer) *node {
 	if len(peers) == 0 {
 		panic("no peers given; use RestartNode instead")
 	}
+	// 先初始化RawNode，然后再Bootstrap
 	rn, err := NewRawNode(c)
 	if err != nil {
 		panic(err)
@@ -294,6 +296,7 @@ type msgWithResult struct {
 }
 
 // node is the canonical implementation of the Node interface
+// 在raw node的基础上加了一堆chan
 type node struct {
 	propc      chan msgWithResult
 	recvc      chan pb.Message
